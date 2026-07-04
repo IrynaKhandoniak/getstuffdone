@@ -319,6 +319,18 @@ button,input,textarea{font-family:inherit;}
 
 .hm-tooltip{position:fixed;background:var(--ink);color:var(--bg);font-size:11px;padding:5px 10px;border-radius:8px;pointer-events:none;z-index:400;white-space:nowrap;display:none;}
 
+/* ── AUTH GATE ── */
+.auth-gate{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;}
+.auth-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:38px 32px;width:min(380px,100%);box-shadow:0 24px 60px rgba(20,20,18,0.12);}
+.auth-logo{width:44px;height:44px;border-radius:12px;background:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+.auth-title{font-family:var(--font-display);font-size:22px;font-weight:600;text-align:center;color:var(--ink);margin-bottom:5px;}
+.auth-subtitle{text-align:center;color:var(--ink-soft);font-size:13px;margin-bottom:26px;line-height:1.5;}
+.auth-error{font-size:12px;min-height:16px;margin:4px 0 12px;line-height:1.5;}
+.auth-submit{width:100%;padding:12px;margin-bottom:16px;font-size:14px;}
+.auth-switch{text-align:center;font-size:12.5px;color:var(--ink-soft);}
+.auth-switch a{color:var(--accent-dk);font-weight:600;text-decoration:none;}
+[data-theme="dark"] .auth-switch a{color:var(--accent);}
+
 /* ── RESPONSIVE ── */
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%);}
@@ -346,8 +358,32 @@ button,input,textarea{font-family:inherit;}
   .content{padding:32px;}
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+
+<div class="auth-gate" id="authGate">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <svg width="21" height="21" viewBox="0 0 22 22" fill="none">
+        <path d="M4 11.5 L8.5 16 L18 6" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="4" cy="11.5" r="1.4" fill="rgba(255,255,255,0.4)"/>
+        <circle cx="18" cy="6" r="1.4" fill="rgba(255,255,255,0.4)"/>
+      </svg>
+    </div>
+    <div class="auth-title">HabitFlow</div>
+    <div class="auth-subtitle" id="authSubtitle">Sign in to sync your habits everywhere.</div>
+    <div class="field-label">Email</div>
+    <input class="field-input" id="authEmail" type="email" placeholder="you@example.com" style="margin-bottom:14px;"/>
+    <div class="field-label">Password</div>
+    <input class="field-input" id="authPassword" type="password" placeholder="••••••••" style="margin-bottom:2px;"/>
+    <div class="auth-error" id="authError"></div>
+    <button class="btn-save auth-submit" id="authSubmitBtn" onclick="submitAuth()">Sign in</button>
+    <div class="auth-switch">
+      <span id="authToggleText">Don't have an account?</span> <a href="#" onclick="toggleAuthMode();return false;" id="authToggleLink">Create one</a>
+    </div>
+  </div>
+</div>
 
 <div class="layout">
   <!-- SIDEBAR -->
@@ -594,6 +630,112 @@ function fillStaticIcons(){
   document.querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=icon(el.dataset.icon);});
 }
 
+// ── SUPABASE: AUTH + CLOUD SYNC ──
+const SUPABASE_URL='https://olvsnunjjcfghhfbtpeb.supabase.co';
+const SUPABASE_KEY='sb_publishable_ijLWtTyCYPmILTY2hm7VQg_JepLpXo5';
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let currentUser=null,authMode='signin',syncTimeout=null;
+
+function toggleAuthMode(){
+  authMode=authMode==='signin'?'signup':'signin';
+  document.getElementById('authSubmitBtn').textContent=authMode==='signin'?'Sign in':'Create account';
+  document.getElementById('authSubtitle').textContent=authMode==='signin'?'Sign in to sync your habits everywhere.':'Create an account to save your habits to the cloud.';
+  document.getElementById('authToggleText').textContent=authMode==='signin'?"Don't have an account?":'Already have an account?';
+  document.getElementById('authToggleLink').textContent=authMode==='signin'?'Create one':'Sign in';
+  const err=document.getElementById('authError');err.textContent='';err.style.color='var(--red)';
+}
+async function submitAuth(){
+  const email=document.getElementById('authEmail').value.trim();
+  const password=document.getElementById('authPassword').value;
+  const errEl=document.getElementById('authError');
+  errEl.style.color='var(--red)';errEl.textContent='';
+  if(!email||!password){errEl.textContent='Enter an email and password.';return;}
+  if(password.length<6){errEl.textContent='Password must be at least 6 characters.';return;}
+  const btn=document.getElementById('authSubmitBtn');
+  btn.disabled=true;btn.textContent='Please wait…';
+  try{
+    let result;
+    if(authMode==='signup'){
+      result=await supabaseClient.auth.signUp({email,password});
+      if(!result.error&&result.data.user&&!result.data.session){
+        errEl.style.color='var(--accent-dk)';
+        errEl.textContent='Check your email to confirm your account, then sign in.';
+        btn.disabled=false;btn.textContent='Create account';
+        return;
+      }
+    }else{
+      result=await supabaseClient.auth.signInWithPassword({email,password});
+    }
+    if(result.error){
+      errEl.textContent=result.error.message;
+      btn.disabled=false;btn.textContent=authMode==='signin'?'Sign in':'Create account';
+      return;
+    }
+    // success — onAuthStateChange takes it from here
+  }catch(e){
+    errEl.textContent='Something went wrong. Please try again.';
+    btn.disabled=false;btn.textContent=authMode==='signin'?'Sign in':'Create account';
+  }
+}
+async function signOutUser(){
+  await supabaseClient.auth.signOut();
+}
+function scheduleSync(){
+  if(!currentUser)return;
+  clearTimeout(syncTimeout);
+  syncTimeout=setTimeout(syncToCloud,800);
+}
+async function syncToCloud(){
+  if(!currentUser)return;
+  try{
+    await supabaseClient.from('habits').upsert(
+      {user_id:currentUser.id,data:state,updated_at:new Date().toISOString()},
+      {onConflict:'user_id'}
+    );
+  }catch(e){ /* offline — localStorage already has it, will retry on next save */ }
+}
+async function loadUserData(){
+  try{
+    const{data}=await supabaseClient.from('habits').select('data').eq('user_id',currentUser.id).maybeSingle();
+    if(data&&data.data){
+      state=data.data;
+    }else{
+      // no cloud data yet for this account — check ONLY this account's own local cache,
+      // never the old shared/unscoped one, so a new sign-up never inherits someone else's habits
+      const local=JSON.parse(localStorage.getItem(storageKey())||'null');
+      state=local||{habits:[]};
+      await syncToCloud();
+    }
+  }catch(e){
+    const local=JSON.parse(localStorage.getItem(storageKey())||'null');
+    state=local||{habits:[]};
+  }
+  localStorage.setItem(storageKey(),JSON.stringify(state));
+  updateAccountUI();
+  render();
+}
+function updateAccountUI(){
+  const nameEl=document.querySelector('.user-name');
+  const planEl=document.querySelector('.user-plan');
+  const avatarEl=document.querySelector('.user-avatar');
+  if(currentUser&&nameEl){
+    nameEl.textContent=currentUser.email;
+    planEl.innerHTML='<a href="#" onclick="signOutUser();return false;" style="color:var(--ink-faint);text-decoration:underline;cursor:pointer;">Sign out</a>';
+    avatarEl.textContent=currentUser.email.charAt(0).toUpperCase();
+  }
+}
+supabaseClient.auth.onAuthStateChange((event,session)=>{
+  const gate=document.getElementById('authGate');
+  if(session&&session.user){
+    currentUser=session.user;
+    gate.style.display='none';
+    loadUserData();
+  }else{
+    currentUser=null;
+    gate.style.display='flex';
+  }
+});
+
 const EMOJI_CATS={
   'Health':['💊','🩺','🩹','🧬','🫀','🧠','🦷','💉','🩻','😴','🛌','🧘','🏃','🚴','🏊','🤸','⛹️','🧗','🤾','🫁'],
   'Food':['🍎','🥕','🥦','🥑','🍇','🍓','🫐','🍊','🍋','🥝','🥗','🥙','🫙','🍵','☕','🧃','💧','🥤','🍱','🧆'],
@@ -618,7 +760,8 @@ const STARTERS=[
 ];
 
 const KEY='hflow3';
-let state=(()=>{try{const s=JSON.parse(localStorage.getItem(KEY));if(s)return s;}catch(e){}return{habits:[]};})();
+let state={habits:[]};
+function storageKey(){return currentUser?('hflow3_'+currentUser.id):KEY;}
 
 let editing=null,selEmoji='💊',selColor=COLORS[0];
 let activeCat='Health',emojiQuery='';
@@ -632,7 +775,7 @@ function todayStr(d=new Date()){return `${d.getFullYear()}-${String(d.getMonth()
 function dateFromStr(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
 function isToday(s){return s===todayStr();}
 function isFuture(s){return s>todayStr();}
-function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function save(){localStorage.setItem(storageKey(),JSON.stringify(state));scheduleSync();}
 
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sidebarOverlay').classList.add('open');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('open');}
@@ -1150,8 +1293,6 @@ window.addEventListener('appinstalled',()=>{
   const btn=document.getElementById('installNavBtn');
   if(btn)btn.style.display='none';
 });
-
-render();
 </script>
 </body>
 </html>
