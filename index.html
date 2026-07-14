@@ -331,6 +331,24 @@ button,input,textarea{font-family:inherit;}
 .auth-switch a{color:var(--accent-dk);font-weight:600;text-decoration:none;}
 [data-theme="dark"] .auth-switch a{color:var(--accent);}
 
+/* ── NOTES EDITOR ── */
+.notes-toolbar{display:flex;align-items:center;gap:2px;padding:4px;border:1px solid var(--line);border-bottom:none;border-radius:10px 10px 0 0;background:var(--surface-2);flex-wrap:wrap;}
+.notes-tb-btn{width:30px;height:30px;border-radius:7px;border:none;background:none;color:var(--ink-soft);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;font-family:inherit;transition:all 0.12s;}
+.notes-tb-btn:hover{background:var(--surface);color:var(--ink);}
+.notes-tb-btn.active{background:var(--accent-soft);color:var(--accent-dk);}
+[data-theme="dark"] .notes-tb-btn.active{color:var(--accent);}
+.notes-tb-sep{width:1px;height:18px;background:var(--line);margin:0 4px;flex-shrink:0;}
+.notes-editable{
+  width:100%;min-height:220px;max-height:50vh;overflow-y:auto;font-size:13.5px;line-height:1.6;
+  padding:12px 14px;border-radius:0 0 10px 10px;border:1px solid var(--line);border-top:none;
+  background:var(--surface-2);color:var(--ink);transition:border-color 0.15s;
+}
+.notes-editable:focus{outline:none;border-color:var(--accent);background:var(--surface);}
+.notes-editable img{max-width:100%;border-radius:8px;display:block;margin:8px 0;}
+.notes-editable:empty:before{content:attr(data-placeholder);color:var(--ink-faint);}
+.notes-editable b,.notes-editable strong{font-weight:700;}
+.notes-editable i,.notes-editable em{font-style:italic;}
+
 /* ── RESPONSIVE ── */
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%);}
@@ -579,14 +597,28 @@ button,input,textarea{font-family:inherit;}
 
 <!-- Notes modal -->
 <div class="modal-bg" id="notesBg">
-  <div class="modal" style="width:min(360px,100%)">
+  <div class="modal" style="width:min(640px,100%)">
     <div class="modal-header">
       <h3 id="notesTitle">Note</h3>
       <button class="icon-btn" onclick="closeNotes()" aria-label="Close"><span class="icon" data-icon="x" style="font-size:18px"></span></button>
     </div>
     <div class="modal-body">
       <div style="font-size:12px;color:var(--ink-faint)" id="notesDateLabel"></div>
-      <textarea class="field-textarea" id="notesText" placeholder="How did it go? Any context…" rows="4"></textarea>
+      <div>
+        <div class="notes-toolbar" id="notesToolbar">
+          <button type="button" class="notes-tb-btn" data-cmd="bold" title="Bold (Ctrl+B)"><b>B</b></button>
+          <button type="button" class="notes-tb-btn" data-cmd="italic" title="Italic (Ctrl+I)"><i>I</i></button>
+          <button type="button" class="notes-tb-btn" data-cmd="underline" title="Underline (Ctrl+U)"><u>U</u></button>
+          <button type="button" class="notes-tb-btn" data-cmd="strikeThrough" title="Strikethrough"><s>S</s></button>
+          <div class="notes-tb-sep"></div>
+          <button type="button" class="notes-tb-btn" data-cmd="insertUnorderedList" title="Bullet list">•≡</button>
+          <button type="button" class="notes-tb-btn" data-cmd="insertOrderedList" title="Numbered list">1≡</button>
+          <div class="notes-tb-sep"></div>
+          <button type="button" class="notes-tb-btn" id="notesImageBtn" title="Add image"><span class="icon" data-icon="image"></span></button>
+          <button type="button" class="notes-tb-btn" data-cmd="removeFormat" title="Clear formatting">Tx</button>
+        </div>
+        <div class="notes-editable" id="notesEditable" contenteditable="true" data-placeholder="How did it go? Any context…"></div>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeNotes()">Cancel</button>
@@ -597,6 +629,7 @@ button,input,textarea{font-family:inherit;}
 
 <div class="hm-tooltip" id="hmTooltip"></div>
 <input type="file" id="importFile" accept="application/json" style="display:none" onchange="handleImportFile(event)"/>
+<input type="file" id="notesImageFile" accept="image/*" style="display:none"/>
 
 <script>
 // ── SELF-CONTAINED ICONS (no external icon font / CDN dependency) ──
@@ -621,7 +654,8 @@ const ICON_PATHS={
   flame:'<path d="M12 2c2 3-1 4-1 7a3 3 0 1 0 6 0c2 2 3 5 1 8a7 7 0 1 1-11-8c1-2 3-4 5-7z"/>',
   note:'<path d="M5 3h11l3 3v15H5z"/><path d="M15 3v4h4"/><path d="M8 12h8M8 16h5"/>',
   trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14"/>',
-  rotate:'<path d="M4 4v6h6"/><path d="M20 12a8 8 0 1 1-2.3-5.7L20 10"/>'
+  rotate:'<path d="M4 4v6h6"/><path d="M20 12a8 8 0 1 1-2.3-5.7L20 10"/>',
+  image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15l-5-5-9 9"/>'
 };
 function icon(name){
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.125em;display:inline-block">${ICON_PATHS[name]||''}</svg>`;
@@ -892,12 +926,18 @@ function render(){
   document.getElementById('topbarDate').textContent=now.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
 }
 
+function stripHtml(html){
+  const d=document.createElement('div');d.innerHTML=html;
+  return (d.textContent||d.innerText||'').replace(/\s+/g,' ').trim();
+}
+
 function buildHabitRow(h,activeDate,future){
   const isDone=!!(h.log&&h.log[activeDate]);
   const isFrozen=!!(h.freezes&&h.freezes[activeDate]);
   const isArchived=!!h.deletedAt;
   const streak=currentStreak(h),total=totalDone(h.log);
-  const note=(h.notes&&h.notes[activeDate])||'';
+  const noteRaw=(h.notes&&h.notes[activeDate])||'';
+  const note=stripHtml(noteRaw);
   const tod=h.timeOfDay&&h.timeOfDay!=='any'?h.timeOfDay:'';
   const freqLabel=h.freqType&&h.freqType!=='daily'?(h.freqType==='weekly'?'Weekdays':'Custom'):'';
   const row=document.createElement('div');row.className='habit-row';row.dataset.id=h.id;
@@ -1145,19 +1185,85 @@ function openNotes(id,date,e){
   const h=state.habits.find(x=>x.id===id);
   document.getElementById('notesTitle').textContent=h?h.emoji+' '+h.name:'Note';
   document.getElementById('notesDateLabel').textContent=dateFromStr(date).toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
-  document.getElementById('notesText').value=(h&&h.notes&&h.notes[date])||'';
+  const raw=(h&&h.notes&&h.notes[date])||'';
+  const editable=document.getElementById('notesEditable');
+  // Backward compatibility: pre-existing notes were plain text. If the stored
+  // value has no HTML tags in it, treat it as plain text so it displays safely.
+  if(raw&&!/<[a-z][\s\S]*>/i.test(raw)){
+    editable.textContent=raw;
+  }else{
+    editable.innerHTML=raw;
+  }
+  updateToolbarState();
   document.getElementById('notesBg').classList.add('open');
-  setTimeout(()=>document.getElementById('notesText').focus(),50);
+  setTimeout(()=>editable.focus(),50);
 }
 function closeNotes(){document.getElementById('notesBg').classList.remove('open');notesHabitId=null;notesDate=null;}
 function saveNote(){
   if(!notesHabitId)return;
   const h=state.habits.find(x=>x.id===notesHabitId);if(!h)return;
   if(!h.notes)h.notes={};
-  const txt=document.getElementById('notesText').value.trim();
-  if(txt)h.notes[notesDate]=txt;else delete h.notes[notesDate];
+  const editable=document.getElementById('notesEditable');
+  const html=editable.innerHTML.trim();
+  const isBlank=!stripHtml(html)&&!editable.querySelector('img');
+  if(!isBlank)h.notes[notesDate]=html;else delete h.notes[notesDate];
   save();render();closeNotes();
 }
+
+// ── Notes rich-text toolbar ──
+function updateToolbarState(){
+  document.querySelectorAll('.notes-tb-btn[data-cmd]').forEach(btn=>{
+    const cmd=btn.dataset.cmd;
+    let active=false;
+    try{active=document.queryCommandState(cmd);}catch(e){}
+    btn.classList.toggle('active',active);
+  });
+}
+document.getElementById('notesToolbar').addEventListener('mousedown',e=>{
+  const btn=e.target.closest('.notes-tb-btn[data-cmd]');
+  if(!btn)return;
+  e.preventDefault(); // keep focus/selection inside the editable area
+  document.execCommand(btn.dataset.cmd,false,null);
+  document.getElementById('notesEditable').focus();
+  updateToolbarState();
+});
+document.getElementById('notesEditable').addEventListener('keyup',updateToolbarState);
+document.getElementById('notesEditable').addEventListener('mouseup',updateToolbarState);
+document.getElementById('notesEditable').addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='b'){e.preventDefault();document.execCommand('bold');updateToolbarState();}
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='i'){e.preventDefault();document.execCommand('italic');updateToolbarState();}
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='u'){e.preventDefault();document.execCommand('underline');updateToolbarState();}
+});
+
+// Image insertion — reads the file as base64 and inserts it inline
+document.getElementById('notesImageBtn').addEventListener('click',()=>{document.getElementById('notesImageFile').click();});
+document.getElementById('notesImageFile').addEventListener('change',e=>{
+  const file=e.target.files[0];if(!file)return;
+  if(!file.type.startsWith('image/')){alert('Please choose an image file.');e.target.value='';return;}
+  if(file.size>4*1024*1024){alert('That image is a bit large — please choose one under 4MB.');e.target.value='';return;}
+  const reader=new FileReader();
+  reader.onload=()=>{
+    document.getElementById('notesEditable').focus();
+    document.execCommand('insertImage',false,reader.result);
+    updateToolbarState();
+  };
+  reader.readAsDataURL(file);
+  e.target.value='';
+});
+// Support pasting images directly (e.g. from clipboard/screenshot)
+document.getElementById('notesEditable').addEventListener('paste',e=>{
+  const items=(e.clipboardData||{}).items||[];
+  for(const item of items){
+    if(item.type&&item.type.startsWith('image/')){
+      e.preventDefault();
+      const file=item.getAsFile();
+      const reader=new FileReader();
+      reader.onload=()=>{document.execCommand('insertImage',false,reader.result);};
+      reader.readAsDataURL(file);
+      return;
+    }
+  }
+});
 
 function useFreezeFromModal(){
   if(!editing)return;
@@ -1243,7 +1349,6 @@ document.getElementById('modalBg').addEventListener('click',e=>{if(e.target===do
 document.getElementById('deleteBg').addEventListener('click',e=>{if(e.target===document.getElementById('deleteBg'))closeDeleteModal();});
 document.getElementById('notesBg').addEventListener('click',e=>{if(e.target===document.getElementById('notesBg'))closeNotes();});
 document.getElementById('habitName').addEventListener('keydown',e=>{if(e.key==='Enter')saveHabit();});
-document.getElementById('notesText').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.metaKey||e.ctrlKey))saveNote();});
 document.getElementById('emojiSearch').addEventListener('input',e=>{emojiQuery=e.target.value;buildEmojiCats();buildEmojiGrid();});
 
 // Theme
