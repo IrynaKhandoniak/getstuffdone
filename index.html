@@ -379,6 +379,9 @@ button,input,textarea{font-family:inherit;}
       <button class="nav-item" onclick="exportData();closeSidebar()">
         <i class="ti ti-download"></i> Export data
       </button>
+      <button class="nav-item" onclick="emailData();closeSidebar()">
+        <i class="ti ti-mail"></i> Email data
+      </button>
       <button class="nav-item" onclick="triggerImport()">
         <i class="ti ti-upload"></i> Import data
       </button>
@@ -931,6 +934,21 @@ function exportData(){
   document.body.appendChild(a);a.click();a.remove();
   URL.revokeObjectURL(url);
 }
+
+function emailData(){
+  // Download the file first (browsers can't attach files to emails automatically)
+  exportData();
+  // Then open the user's default mail app with a pre-filled message
+  const subject=encodeURIComponent('My HabitFlow backup — '+todayStr());
+  const body=encodeURIComponent(
+    'Hi,\n\n'+
+    'A HabitFlow backup file called "habitflow-export-'+todayStr()+'.json" has just been downloaded to your computer (check your Downloads folder).\n\n'+
+    'Please attach that file to this email before sending, so you have a saved copy of your habit data.\n\n'+
+    '— Sent from HabitFlow'
+  );
+  window.location.href='mailto:?subject='+subject+'&body='+body;
+}
+
 function triggerImport(){document.getElementById('importFile').click();}
 function handleImportFile(e){
   const file=e.target.files[0];if(!file)return;
