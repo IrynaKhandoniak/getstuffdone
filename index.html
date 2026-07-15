@@ -15,6 +15,7 @@
 <meta name="apple-mobile-web-app-title" content="HabitFlow"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -22,7 +23,6 @@
   --bg:#FAF9F6;--surface:#FFFFFF;--surface-2:#F2F0EA;--line:rgba(28,27,25,0.09);
   --accent:#2B3A32;--accent-soft:#E4E9E4;--accent-dk:#1C2721;
   --gold:#B08D57;--gold-soft:#F3EADC;--red:#A6453D;--red-soft:#F5E4E1;
-  --slate:#5C6B73;--slate-soft:#E9EDEE;--terracotta:#A8624F;--terracotta-soft:#F4E6E0;
   --radius:14px;--radius-sm:9px;--sidebar-w:264px;--header-h:66px;
   --font-display:'Fraunces',serif;--font-body:'Inter',system-ui,sans-serif;
 }
@@ -31,13 +31,10 @@
   --bg:#141412;--surface:#1C1B19;--surface-2:#211F1B;--line:rgba(239,237,232,0.09);
   --accent:#8CB29D;--accent-soft:#20302A;--accent-dk:#B9D4C4;
   --gold:#CBAA78;--gold-soft:#2E271B;--red:#C56B62;--red-soft:#301E1B;
-  --slate:#9FB0B6;--slate-soft:#20282A;--terracotta:#D08D78;--terracotta-soft:#33231E;
 }
 
 html,body{height:100%;font-family:var(--font-body);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;}
 button,input,textarea{font-family:inherit;}
-.icon{display:inline-flex;}
-.icon svg{width:1em;height:1em;vertical-align:-0.125em;}
 
 /* ── LAYOUT ── */
 .layout{display:flex;min-height:100vh;}
@@ -72,7 +69,7 @@ button,input,textarea{font-family:inherit;}
   font-size:13.5px;color:var(--ink-soft);cursor:pointer;transition:all 0.15s;border:none;background:none;
   font-family:inherit;width:100%;text-align:left;
 }
-.nav-item .icon{font-size:17px;flex-shrink:0;}
+.nav-item i{font-size:17px;flex-shrink:0;}
 .nav-item:hover{background:var(--surface-2);color:var(--ink);}
 .nav-item.active{background:var(--accent-soft);color:var(--accent-dk);font-weight:600;}
 [data-theme="dark"] .nav-item.active{color:var(--accent);}
@@ -138,13 +135,9 @@ button,input,textarea{font-family:inherit;}
 
 /* ── STATS ROW ── */
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
-.stat-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--line);padding:15px 16px;position:relative;overflow:hidden;}
-.stat-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:13px;}
-.stat-card.c-slate .stat-icon{background:var(--slate-soft);color:var(--slate);}
-.stat-card.c-pine .stat-icon{background:var(--accent-soft);color:var(--accent-dk);}
-[data-theme="dark"] .stat-card.c-pine .stat-icon{color:var(--accent);}
-.stat-card.c-gold .stat-icon{background:var(--gold-soft);color:var(--gold);}
-.stat-card.c-terracotta .stat-icon{background:var(--terracotta-soft);color:var(--terracotta);}
+.stat-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--line);padding:15px 16px;}
+.stat-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;margin-bottom:12px;background:var(--surface-2);color:var(--ink-soft);}
+.stat-card.gold .stat-icon{color:var(--gold);}
 .stat-num{font-family:var(--font-display);font-size:23px;font-weight:600;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums;}
 .stat-lbl{font-size:10.5px;color:var(--ink-faint);margin-top:5px;letter-spacing:0.02em;}
 
@@ -160,7 +153,7 @@ button,input,textarea{font-family:inherit;}
 .add-btn{background:var(--accent);border:none;color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:var(--radius-sm);font-family:inherit;cursor:pointer;white-space:nowrap;transition:background 0.15s;flex-shrink:0;}
 .add-btn:hover{background:var(--accent-dk);}
 [data-theme="dark"] .add-btn{color:#0e1512;}
-.add-btn .icon{font-size:15px;}
+.add-btn i{font-size:15px;}
 
 /* ── GROUP HEADER ── */
 .group-header{font-size:10.5px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint);padding:14px 4px 8px;}
@@ -191,7 +184,6 @@ button,input,textarea{font-family:inherit;}
 .habit-name.done-text{color:var(--ink-faint);text-decoration:line-through;}
 .habit-meta{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;align-items:center;}
 .meta-chip{font-size:11px;color:var(--ink-soft);display:flex;align-items:center;gap:3px;padding:2px 7px;border-radius:6px;background:var(--surface-2);}
-.meta-chip .icon{font-size:10px;}
 .meta-chip.streak{color:var(--gold);}
 .meta-chip.frozen-chip{color:var(--accent-dk);background:var(--accent-soft);}
 [data-theme="dark"] .meta-chip.frozen-chip{color:var(--accent);}
@@ -203,7 +195,6 @@ button,input,textarea{font-family:inherit;}
 [data-theme="dark"] .time-tag.afternoon{background:#1D2A31;color:#93B4C7;}
 [data-theme="dark"] .time-tag.evening{background:#2C2130;color:#CBA6CB;}
 .note-chip{font-size:10px;color:var(--ink-faint);display:flex;align-items:center;gap:2px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.note-chip .icon{font-size:10px;}
 
 .spark{display:flex;gap:2px;align-items:flex-end;height:15px;margin-top:8px;}
 .spark-bar{width:3px;border-radius:1px;background:var(--line);height:40%;}
@@ -222,7 +213,7 @@ button,input,textarea{font-family:inherit;}
 
 /* ── EMPTY STATE ── */
 .empty{text-align:center;padding:44px 20px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--line);}
-.empty-icon{font-size:32px;margin-bottom:14px;opacity:0.7;color:var(--ink-faint);}
+.empty-icon{font-size:32px;margin-bottom:14px;opacity:0.7;}
 .empty h3{font-family:var(--font-display);font-size:17px;font-weight:600;color:var(--ink);margin-bottom:7px;}
 .empty p{font-size:13px;color:var(--ink-soft);line-height:1.6;margin-bottom:22px;}
 .starter-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
@@ -255,7 +246,6 @@ button,input,textarea{font-family:inherit;}
 .archived-date{font-size:10.5px;color:var(--ink-faint);margin-top:2px;}
 .archived-actions{display:flex;gap:4px;}
 .pill-btn{font-size:11px;font-weight:600;padding:6px 11px;border-radius:20px;border:1px solid var(--line);background:none;color:var(--ink-soft);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;transition:all 0.15s;}
-.pill-btn .icon{font-size:12px;}
 .pill-btn:hover{background:var(--surface-2);color:var(--ink);}
 .pill-btn.danger:hover{background:var(--red-soft);color:var(--red);border-color:var(--red-soft);}
 .archived-empty{font-size:12.5px;color:var(--ink-faint);text-align:center;padding:20px 0;}
@@ -303,12 +293,10 @@ button,input,textarea{font-family:inherit;}
 [data-theme="dark"] .btn-save{color:#0e1512;}
 .btn-danger{background:var(--red);border:none;color:#fff;font-size:13.5px;font-weight:600;padding:9px 22px;border-radius:10px;cursor:pointer;font-family:inherit;}
 .delete-btn{background:none;border:none;cursor:pointer;color:var(--ink-faint);font-size:12px;padding:6px 10px;border-radius:8px;margin-right:auto;font-family:inherit;display:flex;align-items:center;gap:4px;transition:all 0.15s;}
-.delete-btn .icon{font-size:13px;}
 .delete-btn:hover{color:var(--red);background:var(--red-soft);}
 .freeze-row{display:flex;align-items:center;gap:10px;padding:12px;background:var(--surface-2);border-radius:10px;}
 .freeze-info{flex:1;font-size:12px;color:var(--ink-soft);line-height:1.5;}
 .freeze-use-btn{background:none;border:1px solid var(--gold);color:var(--gold);font-size:12px;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:inherit;white-space:nowrap;display:flex;align-items:center;gap:4px;flex-shrink:0;}
-.freeze-use-btn .icon{font-size:13px;}
 .freeze-use-btn:hover{background:var(--gold-soft);}.freeze-use-btn:disabled{opacity:0.4;cursor:default;}
 
 .del-modal{background:var(--surface);border-radius:20px;width:min(340px,100%);border:1px solid var(--line);padding:28px;text-align:center;box-shadow:0 24px 60px rgba(20,20,18,0.18);}
@@ -318,36 +306,6 @@ button,input,textarea{font-family:inherit;}
 .del-btns{display:flex;gap:8px;justify-content:center;}
 
 .hm-tooltip{position:fixed;background:var(--ink);color:var(--bg);font-size:11px;padding:5px 10px;border-radius:8px;pointer-events:none;z-index:400;white-space:nowrap;display:none;}
-
-/* ── AUTH GATE ── */
-.auth-gate{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;}
-.auth-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:38px 32px;width:min(380px,100%);box-shadow:0 24px 60px rgba(20,20,18,0.12);}
-.auth-logo{width:44px;height:44px;border-radius:12px;background:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
-.auth-title{font-family:var(--font-display);font-size:22px;font-weight:600;text-align:center;color:var(--ink);margin-bottom:5px;}
-.auth-subtitle{text-align:center;color:var(--ink-soft);font-size:13px;margin-bottom:26px;line-height:1.5;}
-.auth-error{font-size:12px;min-height:16px;margin:4px 0 12px;line-height:1.5;}
-.auth-submit{width:100%;padding:12px;margin-bottom:16px;font-size:14px;}
-.auth-switch{text-align:center;font-size:12.5px;color:var(--ink-soft);}
-.auth-switch a{color:var(--accent-dk);font-weight:600;text-decoration:none;}
-[data-theme="dark"] .auth-switch a{color:var(--accent);}
-
-/* ── NOTES EDITOR ── */
-.notes-toolbar{display:flex;align-items:center;gap:2px;padding:4px;border:1px solid var(--line);border-bottom:none;border-radius:10px 10px 0 0;background:var(--surface-2);flex-wrap:wrap;}
-.notes-tb-btn{width:30px;height:30px;border-radius:7px;border:none;background:none;color:var(--ink-soft);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;font-family:inherit;transition:all 0.12s;}
-.notes-tb-btn:hover{background:var(--surface);color:var(--ink);}
-.notes-tb-btn.active{background:var(--accent-soft);color:var(--accent-dk);}
-[data-theme="dark"] .notes-tb-btn.active{color:var(--accent);}
-.notes-tb-sep{width:1px;height:18px;background:var(--line);margin:0 4px;flex-shrink:0;}
-.notes-editable{
-  width:100%;min-height:220px;max-height:50vh;overflow-y:auto;font-size:13.5px;line-height:1.6;
-  padding:12px 14px;border-radius:0 0 10px 10px;border:1px solid var(--line);border-top:none;
-  background:var(--surface-2);color:var(--ink);transition:border-color 0.15s;
-}
-.notes-editable:focus{outline:none;border-color:var(--accent);background:var(--surface);}
-.notes-editable img{max-width:100%;border-radius:8px;display:block;margin:8px 0;}
-.notes-editable:empty:before{content:attr(data-placeholder);color:var(--ink-faint);}
-.notes-editable b,.notes-editable strong{font-weight:700;}
-.notes-editable i,.notes-editable em{font-style:italic;}
 
 /* ── RESPONSIVE ── */
 @media(max-width:768px){
@@ -376,32 +334,8 @@ button,input,textarea{font-family:inherit;}
   .content{padding:32px;}
 }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-
-<div class="auth-gate" id="authGate">
-  <div class="auth-card">
-    <div class="auth-logo">
-      <svg width="21" height="21" viewBox="0 0 22 22" fill="none">
-        <path d="M4 11.5 L8.5 16 L18 6" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="4" cy="11.5" r="1.4" fill="rgba(255,255,255,0.4)"/>
-        <circle cx="18" cy="6" r="1.4" fill="rgba(255,255,255,0.4)"/>
-      </svg>
-    </div>
-    <div class="auth-title">HabitFlow</div>
-    <div class="auth-subtitle" id="authSubtitle">Sign in to sync your habits everywhere.</div>
-    <div class="field-label">Email</div>
-    <input class="field-input" id="authEmail" type="email" placeholder="you@example.com" style="margin-bottom:14px;"/>
-    <div class="field-label">Password</div>
-    <input class="field-input" id="authPassword" type="password" placeholder="••••••••" style="margin-bottom:2px;"/>
-    <div class="auth-error" id="authError"></div>
-    <button class="btn-save auth-submit" id="authSubmitBtn" onclick="submitAuth()">Sign in</button>
-    <div class="auth-switch">
-      <span id="authToggleText">Don't have an account?</span> <a href="#" onclick="toggleAuthMode();return false;" id="authToggleLink">Create one</a>
-    </div>
-  </div>
-</div>
 
 <div class="layout">
   <!-- SIDEBAR -->
@@ -424,31 +358,32 @@ button,input,textarea{font-family:inherit;}
     <nav class="sidebar-nav">
       <span class="nav-section-label">Tracking</span>
       <button class="nav-item active" onclick="closeSidebar()">
-        <span class="icon" data-icon="check"></span> Today
+        <i class="ti ti-check"></i> Today
         <span class="nav-badge" id="sidebarTodayBadge">0</span>
       </button>
       <button class="nav-item" onclick="toggleHeatmap();closeSidebar()">
-        <span class="icon" data-icon="grid"></span> Heatmap
+        <i class="ti ti-layout-grid"></i> Heatmap
       </button>
       <button class="nav-item" id="archivedNavBtn" onclick="toggleArchived();closeSidebar()">
-        <span class="icon" data-icon="archive"></span> Archived
+        <i class="ti ti-archive"></i> Archived
       </button>
+
       <button class="nav-item" id="installNavBtn" onclick="installApp()" style="display:none">
-        <span class="icon" data-icon="download"></span> Install app
+        <i class="ti ti-download"></i> Install app
       </button>
 
       <span class="nav-section-label">Manage</span>
       <button class="nav-item" onclick="openModal();closeSidebar()">
-        <span class="icon" data-icon="plus"></span> Add Habit
+        <i class="ti ti-plus"></i> Add Habit
       </button>
       <button class="nav-item" onclick="exportData();closeSidebar()">
-        <span class="icon" data-icon="download"></span> Export data
+        <i class="ti ti-download"></i> Export data
       </button>
       <button class="nav-item" onclick="triggerImport()">
-        <span class="icon" data-icon="upload"></span> Import data
+        <i class="ti ti-upload"></i> Import data
       </button>
       <button class="nav-item" id="themeNavBtn" onclick="toggleTheme()">
-        <span class="icon" id="themeNavIcon" data-icon="moon"></span> <span id="themeNavLabel">Dark mode</span>
+        <i class="ti ti-moon" id="themeNavIcon"></i> <span id="themeNavLabel">Dark mode</span>
       </button>
     </nav>
 
@@ -468,13 +403,13 @@ button,input,textarea{font-family:inherit;}
     <!-- TOP BAR -->
     <header class="topbar">
       <button class="menu-btn" onclick="openSidebar()" aria-label="Menu">
-        <span class="icon" data-icon="menu"></span>
+        <i class="ti ti-menu-2"></i>
       </button>
       <div class="topbar-title">Today</div>
       <div class="topbar-date" id="topbarDate"></div>
-      <button class="icon-btn" id="heatmapBtn" onclick="toggleHeatmap()" title="Heatmap" aria-label="Heatmap"><span class="icon" data-icon="grid"></span></button>
-      <button class="icon-btn" onclick="openModal()" title="Add habit" aria-label="Add habit"><span class="icon" data-icon="plus"></span></button>
-      <button class="icon-btn" id="themeTopBtn" title="Toggle theme" aria-label="Toggle theme"><span class="icon" id="themeTopIcon" data-icon="moon"></span></button>
+      <button class="icon-btn" id="heatmapBtn" onclick="toggleHeatmap()" title="Heatmap" aria-label="Heatmap"><i class="ti ti-layout-grid"></i></button>
+      <button class="icon-btn" onclick="openModal()" title="Add habit" aria-label="Add habit"><i class="ti ti-plus"></i></button>
+      <button class="icon-btn" id="themeTopBtn" title="Toggle theme" aria-label="Toggle theme"><i class="ti ti-moon" id="themeTopIcon"></i></button>
     </header>
 
     <!-- CONTENT -->
@@ -485,9 +420,9 @@ button,input,textarea{font-family:inherit;}
         <div class="week-header">
           <div class="week-title" id="weekRangeLabel">This week</div>
           <div class="week-nav">
-            <button class="nav-btn" id="prevBtn" onclick="shiftView(-1)" aria-label="Previous"><span class="icon" data-icon="chevronLeft"></span></button>
+            <button class="nav-btn" id="prevBtn" onclick="shiftView(-1)" aria-label="Previous"><i class="ti ti-chevron-left"></i></button>
             <span id="todayLabel" style="font-size:12px;color:var(--ink-soft);padding:0 4px;"></span>
-            <button class="nav-btn" id="nextBtn" onclick="shiftView(1)" aria-label="Next"><span class="icon" data-icon="chevronRight"></span></button>
+            <button class="nav-btn" id="nextBtn" onclick="shiftView(1)" aria-label="Next"><i class="ti ti-chevron-right"></i></button>
           </div>
         </div>
         <div class="week-strip" id="weekStrip"></div>
@@ -512,7 +447,7 @@ button,input,textarea{font-family:inherit;}
             <button class="tf-btn" data-tf="afternoon" onclick="setTimeFilter('afternoon')">Afternoon</button>
             <button class="tf-btn" data-tf="evening" onclick="setTimeFilter('evening')">Evening</button>
           </div>
-          <button class="add-btn" onclick="openModal()"><span class="icon" data-icon="plus"></span><span>New Habit</span></button>
+          <button class="add-btn" onclick="openModal()"><i class="ti ti-plus"></i><span>New Habit</span></button>
         </div>
       </div>
       <div class="habit-list" id="habitList"></div>
@@ -546,7 +481,7 @@ button,input,textarea{font-family:inherit;}
   <div class="modal">
     <div class="modal-header">
       <h3 id="modalTitle">New habit</h3>
-      <button class="icon-btn" onclick="closeModal()" aria-label="Close"><span class="icon" data-icon="x" style="font-size:18px"></span></button>
+      <button class="icon-btn" onclick="closeModal()" aria-label="Close"><i class="ti ti-x" style="font-size:18px"></i></button>
     </div>
     <div class="modal-body">
       <div><div class="field-label">Name</div><input class="field-input" id="habitName" type="text" placeholder="e.g. Cold Shower"/></div>
@@ -570,12 +505,12 @@ button,input,textarea{font-family:inherit;}
         <div class="field-label">Streak freeze</div>
         <div class="freeze-row">
           <div class="freeze-info">Protects your streak when you miss a day. You get <b>1 freeze per week</b>.</div>
-          <button class="freeze-use-btn" id="freezeModalBtn" onclick="useFreezeFromModal()"><span class="icon" data-icon="snowflake"></span> Freeze today</button>
+          <button class="freeze-use-btn" id="freezeModalBtn" onclick="useFreezeFromModal()"><i class="ti ti-snowflake" style="font-size:13px"></i> Freeze today</button>
         </div>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="delete-btn" id="deleteBtn" onclick="confirmDelete()" style="display:none"><span class="icon" data-icon="trash"></span> Delete</button>
+      <button class="delete-btn" id="deleteBtn" onclick="confirmDelete()" style="display:none"><i class="ti ti-trash" style="font-size:13px"></i> Delete</button>
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
       <button class="btn-save" id="saveBtn" onclick="saveHabit()">Save</button>
     </div>
@@ -585,7 +520,7 @@ button,input,textarea{font-family:inherit;}
 <!-- Delete confirm modal -->
 <div class="modal-bg" id="deleteBg">
   <div class="del-modal">
-    <div class="del-icon"><span class="icon" data-icon="trash"></span></div>
+    <div class="del-icon"><i class="ti ti-trash"></i></div>
     <h3 id="delHabitName">Delete habit?</h3>
     <p>Your past history stays intact so old days remain accurate. The habit just won't appear from today onwards, and you can restore it later from Archived.</p>
     <div class="del-btns">
@@ -597,28 +532,14 @@ button,input,textarea{font-family:inherit;}
 
 <!-- Notes modal -->
 <div class="modal-bg" id="notesBg">
-  <div class="modal" style="width:min(640px,100%)">
+  <div class="modal" style="width:min(360px,100%)">
     <div class="modal-header">
       <h3 id="notesTitle">Note</h3>
-      <button class="icon-btn" onclick="closeNotes()" aria-label="Close"><span class="icon" data-icon="x" style="font-size:18px"></span></button>
+      <button class="icon-btn" onclick="closeNotes()" aria-label="Close"><i class="ti ti-x" style="font-size:18px"></i></button>
     </div>
     <div class="modal-body">
       <div style="font-size:12px;color:var(--ink-faint)" id="notesDateLabel"></div>
-      <div>
-        <div class="notes-toolbar" id="notesToolbar">
-          <button type="button" class="notes-tb-btn" data-cmd="bold" title="Bold (Ctrl+B)"><b>B</b></button>
-          <button type="button" class="notes-tb-btn" data-cmd="italic" title="Italic (Ctrl+I)"><i>I</i></button>
-          <button type="button" class="notes-tb-btn" data-cmd="underline" title="Underline (Ctrl+U)"><u>U</u></button>
-          <button type="button" class="notes-tb-btn" data-cmd="strikeThrough" title="Strikethrough"><s>S</s></button>
-          <div class="notes-tb-sep"></div>
-          <button type="button" class="notes-tb-btn" data-cmd="insertUnorderedList" title="Bullet list">•≡</button>
-          <button type="button" class="notes-tb-btn" data-cmd="insertOrderedList" title="Numbered list">1≡</button>
-          <div class="notes-tb-sep"></div>
-          <button type="button" class="notes-tb-btn" id="notesImageBtn" title="Add image"><span class="icon" data-icon="image"></span></button>
-          <button type="button" class="notes-tb-btn" data-cmd="removeFormat" title="Clear formatting">Tx</button>
-        </div>
-        <div class="notes-editable" id="notesEditable" contenteditable="true" data-placeholder="How did it go? Any context…"></div>
-      </div>
+      <textarea class="field-textarea" id="notesText" placeholder="How did it go? Any context…" rows="4"></textarea>
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeNotes()">Cancel</button>
@@ -629,147 +550,8 @@ button,input,textarea{font-family:inherit;}
 
 <div class="hm-tooltip" id="hmTooltip"></div>
 <input type="file" id="importFile" accept="application/json" style="display:none" onchange="handleImportFile(event)"/>
-<input type="file" id="notesImageFile" accept="image/*" style="display:none"/>
 
 <script>
-// ── SELF-CONTAINED ICONS (no external icon font / CDN dependency) ──
-const ICON_PATHS={
-  check:'<path d="M4 12l5 5L20 7"/>',
-  grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
-  archive:'<rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8"/><path d="M10 13h4"/>',
-  plus:'<path d="M12 5v14M5 12h14"/>',
-  download:'<path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/>',
-  upload:'<path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/><path d="M7 8l5-5 5 5"/><path d="M12 3v12"/>',
-  moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>',
-  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
-  menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',
-  x:'<path d="M18 6 6 18M6 6l12 12"/>',
-  chevronLeft:'<path d="M15 18l-6-6 6-6"/>',
-  chevronRight:'<path d="M9 18l6-6-6-6"/>',
-  grip:'<circle cx="9" cy="6" r="1.3"/><circle cx="15" cy="6" r="1.3"/><circle cx="9" cy="12" r="1.3"/><circle cx="15" cy="12" r="1.3"/><circle cx="9" cy="18" r="1.3"/><circle cx="15" cy="18" r="1.3"/>',
-  listCheck:'<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/>',
-  bolt:'<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/>',
-  star:'<path d="M12 2l2.9 6.6L22 9.3l-5 4.9 1.2 7-6.2-3.6L5.8 21l1.2-7-5-4.9 7.1-.7L12 2z"/>',
-  snowflake:'<path d="M12 2v20M4.5 7l15 10M19.5 7l-15 10"/>',
-  flame:'<path d="M12 2c2 3-1 4-1 7a3 3 0 1 0 6 0c2 2 3 5 1 8a7 7 0 1 1-11-8c1-2 3-4 5-7z"/>',
-  note:'<path d="M5 3h11l3 3v15H5z"/><path d="M15 3v4h4"/><path d="M8 12h8M8 16h5"/>',
-  trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14"/>',
-  rotate:'<path d="M4 4v6h6"/><path d="M20 12a8 8 0 1 1-2.3-5.7L20 10"/>',
-  image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15l-5-5-9 9"/>'
-};
-function icon(name){
-  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-0.125em;display:inline-block">${ICON_PATHS[name]||''}</svg>`;
-}
-function fillStaticIcons(){
-  document.querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=icon(el.dataset.icon);});
-}
-
-// ── SUPABASE: AUTH + CLOUD SYNC ──
-const SUPABASE_URL='https://olvsnunjjcfghhfbtpeb.supabase.co';
-const SUPABASE_KEY='sb_publishable_ijLWtTyCYPmILTY2hm7VQg_JepLpXo5';
-const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let currentUser=null,authMode='signin',syncTimeout=null;
-
-function toggleAuthMode(){
-  authMode=authMode==='signin'?'signup':'signin';
-  document.getElementById('authSubmitBtn').textContent=authMode==='signin'?'Sign in':'Create account';
-  document.getElementById('authSubtitle').textContent=authMode==='signin'?'Sign in to sync your habits everywhere.':'Create an account to save your habits to the cloud.';
-  document.getElementById('authToggleText').textContent=authMode==='signin'?"Don't have an account?":'Already have an account?';
-  document.getElementById('authToggleLink').textContent=authMode==='signin'?'Create one':'Sign in';
-  const err=document.getElementById('authError');err.textContent='';err.style.color='var(--red)';
-}
-async function submitAuth(){
-  const email=document.getElementById('authEmail').value.trim();
-  const password=document.getElementById('authPassword').value;
-  const errEl=document.getElementById('authError');
-  errEl.style.color='var(--red)';errEl.textContent='';
-  if(!email||!password){errEl.textContent='Enter an email and password.';return;}
-  if(password.length<6){errEl.textContent='Password must be at least 6 characters.';return;}
-  const btn=document.getElementById('authSubmitBtn');
-  btn.disabled=true;btn.textContent='Please wait…';
-  try{
-    let result;
-    if(authMode==='signup'){
-      result=await supabaseClient.auth.signUp({email,password});
-      if(!result.error&&result.data.user&&!result.data.session){
-        errEl.style.color='var(--accent-dk)';
-        errEl.textContent='Check your email to confirm your account, then sign in.';
-        btn.disabled=false;btn.textContent='Create account';
-        return;
-      }
-    }else{
-      result=await supabaseClient.auth.signInWithPassword({email,password});
-    }
-    if(result.error){
-      errEl.textContent=result.error.message;
-      btn.disabled=false;btn.textContent=authMode==='signin'?'Sign in':'Create account';
-      return;
-    }
-    // success — onAuthStateChange takes it from here
-  }catch(e){
-    errEl.textContent='Something went wrong. Please try again.';
-    btn.disabled=false;btn.textContent=authMode==='signin'?'Sign in':'Create account';
-  }
-}
-async function signOutUser(){
-  await supabaseClient.auth.signOut();
-}
-function scheduleSync(){
-  if(!currentUser)return;
-  clearTimeout(syncTimeout);
-  syncTimeout=setTimeout(syncToCloud,800);
-}
-async function syncToCloud(){
-  if(!currentUser)return;
-  try{
-    await supabaseClient.from('habits').upsert(
-      {user_id:currentUser.id,data:state,updated_at:new Date().toISOString()},
-      {onConflict:'user_id'}
-    );
-  }catch(e){ /* offline — localStorage already has it, will retry on next save */ }
-}
-async function loadUserData(){
-  try{
-    const{data}=await supabaseClient.from('habits').select('data').eq('user_id',currentUser.id).maybeSingle();
-    if(data&&data.data){
-      state=data.data;
-    }else{
-      // no cloud data yet for this account — check ONLY this account's own local cache,
-      // never the old shared/unscoped one, so a new sign-up never inherits someone else's habits
-      const local=JSON.parse(localStorage.getItem(storageKey())||'null');
-      state=local||{habits:[]};
-      await syncToCloud();
-    }
-  }catch(e){
-    const local=JSON.parse(localStorage.getItem(storageKey())||'null');
-    state=local||{habits:[]};
-  }
-  localStorage.setItem(storageKey(),JSON.stringify(state));
-  updateAccountUI();
-  render();
-}
-function updateAccountUI(){
-  const nameEl=document.querySelector('.user-name');
-  const planEl=document.querySelector('.user-plan');
-  const avatarEl=document.querySelector('.user-avatar');
-  if(currentUser&&nameEl){
-    nameEl.textContent=currentUser.email;
-    planEl.innerHTML='<a href="#" onclick="signOutUser();return false;" style="color:var(--ink-faint);text-decoration:underline;cursor:pointer;">Sign out</a>';
-    avatarEl.textContent=currentUser.email.charAt(0).toUpperCase();
-  }
-}
-supabaseClient.auth.onAuthStateChange((event,session)=>{
-  const gate=document.getElementById('authGate');
-  if(session&&session.user){
-    currentUser=session.user;
-    gate.style.display='none';
-    loadUserData();
-  }else{
-    currentUser=null;
-    gate.style.display='flex';
-  }
-});
-
 const EMOJI_CATS={
   'Health':['💊','🩺','🩹','🧬','🫀','🧠','🦷','💉','🩻','😴','🛌','🧘','🏃','🚴','🏊','🤸','⛹️','🧗','🤾','🫁'],
   'Food':['🍎','🥕','🥦','🥑','🍇','🍓','🫐','🍊','🍋','🥝','🥗','🥙','🫙','🍵','☕','🧃','💧','🥤','🍱','🧆'],
@@ -794,8 +576,7 @@ const STARTERS=[
 ];
 
 const KEY='hflow3';
-let state={habits:[]};
-function storageKey(){return currentUser?('hflow3_'+currentUser.id):KEY;}
+let state=(()=>{try{const s=JSON.parse(localStorage.getItem(KEY));if(s)return s;}catch(e){}return{habits:[]};})();
 
 let editing=null,selEmoji='💊',selColor=COLORS[0];
 let activeCat='Health',emojiQuery='';
@@ -809,7 +590,7 @@ function todayStr(d=new Date()){return `${d.getFullYear()}-${String(d.getMonth()
 function dateFromStr(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
 function isToday(s){return s===todayStr();}
 function isFuture(s){return s>todayStr();}
-function save(){localStorage.setItem(storageKey(),JSON.stringify(state));scheduleSync();}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
 
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sidebarOverlay').classList.add('open');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('open');}
@@ -851,6 +632,7 @@ function perfectDays(){
   }
   return count;
 }
+// weekly completion rate for the ring (last 7 days, scheduled days only)
 function weeklyRate(h){
   let scheduled=0,done=0;
   for(let i=0;i<7;i++){
@@ -926,24 +708,18 @@ function render(){
   document.getElementById('topbarDate').textContent=now.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
 }
 
-function stripHtml(html){
-  const d=document.createElement('div');d.innerHTML=html;
-  return (d.textContent||d.innerText||'').replace(/\s+/g,' ').trim();
-}
-
 function buildHabitRow(h,activeDate,future){
   const isDone=!!(h.log&&h.log[activeDate]);
   const isFrozen=!!(h.freezes&&h.freezes[activeDate]);
   const isArchived=!!h.deletedAt;
   const streak=currentStreak(h),total=totalDone(h.log);
-  const noteRaw=(h.notes&&h.notes[activeDate])||'';
-  const note=stripHtml(noteRaw);
+  const note=(h.notes&&h.notes[activeDate])||'';
   const tod=h.timeOfDay&&h.timeOfDay!=='any'?h.timeOfDay:'';
   const freqLabel=h.freqType&&h.freqType!=='daily'?(h.freqType==='weekly'?'Weekdays':'Custom'):'';
   const row=document.createElement('div');row.className='habit-row';row.dataset.id=h.id;
 
   row.innerHTML=`
-    <div class="drag-handle" aria-label="Drag to reorder">${icon('grip')}</div>
+    <div class="drag-handle" aria-label="Drag to reorder"><i class="ti ti-grip-vertical"></i></div>
     <div class="habit-icon-wrap">
       ${buildRing(h)}
       <div class="habit-icon" style="background:${h.color}22;${isArchived?'opacity:0.5':''}">${h.emoji}</div>
@@ -951,16 +727,16 @@ function buildHabitRow(h,activeDate,future){
     <div class="habit-info">
       <div class="habit-name${isDone&&!isFrozen?' done-text':''}">${h.name}</div>
       <div class="habit-meta">
-        ${isFrozen?`<span class="meta-chip frozen-chip"><span class="icon">${icon('snowflake')}</span> Frozen</span>`:`<span class="meta-chip streak"><span class="icon">${icon('bolt')}</span> ${streak}d</span>`}
-        <span class="meta-chip"><span class="icon">${icon('flame')}</span> ${total}</span>
+        ${isFrozen?`<span class="meta-chip frozen-chip"><i class="ti ti-snowflake" style="font-size:10px"></i> Frozen</span>`:`<span class="meta-chip streak"><i class="ti ti-bolt" style="font-size:10px"></i> ${streak}d</span>`}
+        <span class="meta-chip"><i class="ti ti-flame" style="font-size:10px"></i> ${total}</span>
         ${tod?`<span class="time-tag ${tod}">${tod}</span>`:''}
         ${freqLabel?`<span class="meta-chip" style="color:var(--ink-faint)">${freqLabel}</span>`:''}
-        ${note?`<span class="note-chip"><span class="icon">${icon('note')}</span>${note}</span>`:''}
+        ${note?`<span class="note-chip"><i class="ti ti-note" style="font-size:10px"></i>${note}</span>`:''}
       </div>
       ${buildSparkline(h)}
     </div>
     <div class="habit-actions">
-      <button class="icon-btn" style="font-size:15px;color:${note?'var(--accent)':'var(--ink-faint)'}" title="${note?'Edit note':'Add note'}" aria-label="Note"><span class="icon">${icon('note')}</span></button>
+      <button class="icon-btn" style="font-size:15px;color:${note?'var(--accent)':'var(--ink-faint)'}" title="${note?'Edit note':'Add note'}" aria-label="Note"><i class="ti ti-note"></i></button>
       <button class="check-circle${isDone?' checked':isFrozen?' frozen-check':''}" aria-label="${isDone?'Uncheck':'Check'} ${h.name}" ${future||isArchived?'disabled':''}>
         ${isDone||isFrozen?`<svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l4 4L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
       </button>
@@ -1026,6 +802,7 @@ function renderList(){
     return;
   }
 
+  // grouped by time of day
   GROUP_ORDER.forEach(([val,label])=>{
     const groupHabits=habits.filter(h=>(h.timeOfDay||'any')===val);
     if(!groupHabits.length)return;
@@ -1046,10 +823,10 @@ function renderStats(){
   const pd=perfectDays();
   document.getElementById('sidebarTodayBadge').textContent=doneCount+'/'+visible.length;
   document.getElementById('statsRow').innerHTML=`
-    <div class="stat-card c-slate"><div class="stat-icon">${icon('listCheck')}</div><div class="stat-num">${allActive.length}</div><div class="stat-lbl">Total habits</div></div>
-    <div class="stat-card c-pine"><div class="stat-icon">${icon('check')}</div><div class="stat-num">${doneCount}/${visible.length}</div><div class="stat-lbl">${isToday(ad)?'Done today':'Done that day'}</div></div>
-    <div class="stat-card c-gold"><div class="stat-icon">${icon('bolt')}</div><div class="stat-num">${best}d</div><div class="stat-lbl">Best streak</div></div>
-    <div class="stat-card c-terracotta"><div class="stat-icon">${icon('star')}</div><div class="stat-num">${pd}</div><div class="stat-lbl">Perfect days</div></div>`;
+    <div class="stat-card"><div class="stat-icon"><i class="ti ti-list-check"></i></div><div class="stat-num">${allActive.length}</div><div class="stat-lbl">Total habits</div></div>
+    <div class="stat-card"><div class="stat-icon"><i class="ti ti-check"></i></div><div class="stat-num">${doneCount}/${visible.length}</div><div class="stat-lbl">${isToday(ad)?'Done today':'Done that day'}</div></div>
+    <div class="stat-card"><div class="stat-icon"><i class="ti ti-bolt"></i></div><div class="stat-num">${best}d</div><div class="stat-lbl">Best streak</div></div>
+    <div class="stat-card gold"><div class="stat-icon"><i class="ti ti-star"></i></div><div class="stat-num">${pd}</div><div class="stat-lbl">Perfect days</div></div>`;
 }
 
 function renderDateLabel(){
@@ -1130,8 +907,8 @@ function renderArchived(){
       <div class="archived-icon" style="background:${h.color}22">${h.emoji}</div>
       <div class="archived-info"><div class="archived-name">${h.name}</div><div class="archived-date">Archived ${dLabel}</div></div>
       <div class="archived-actions">
-        <button class="pill-btn restore-btn"><span class="icon">${icon('rotate')}</span> Restore</button>
-        <button class="pill-btn danger del-btn"><span class="icon">${icon('trash')}</span></button>
+        <button class="pill-btn restore-btn"><i class="ti ti-rotate-clockwise" style="font-size:12px"></i> Restore</button>
+        <button class="pill-btn danger del-btn"><i class="ti ti-trash" style="font-size:12px"></i></button>
       </div>`;
     row.querySelector('.restore-btn').addEventListener('click',()=>restoreHabit(h.id));
     row.querySelector('.del-btn').addEventListener('click',()=>permanentlyDelete(h.id));
@@ -1185,85 +962,19 @@ function openNotes(id,date,e){
   const h=state.habits.find(x=>x.id===id);
   document.getElementById('notesTitle').textContent=h?h.emoji+' '+h.name:'Note';
   document.getElementById('notesDateLabel').textContent=dateFromStr(date).toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
-  const raw=(h&&h.notes&&h.notes[date])||'';
-  const editable=document.getElementById('notesEditable');
-  // Backward compatibility: pre-existing notes were plain text. If the stored
-  // value has no HTML tags in it, treat it as plain text so it displays safely.
-  if(raw&&!/<[a-z][\s\S]*>/i.test(raw)){
-    editable.textContent=raw;
-  }else{
-    editable.innerHTML=raw;
-  }
-  updateToolbarState();
+  document.getElementById('notesText').value=(h&&h.notes&&h.notes[date])||'';
   document.getElementById('notesBg').classList.add('open');
-  setTimeout(()=>editable.focus(),50);
+  setTimeout(()=>document.getElementById('notesText').focus(),50);
 }
 function closeNotes(){document.getElementById('notesBg').classList.remove('open');notesHabitId=null;notesDate=null;}
 function saveNote(){
   if(!notesHabitId)return;
   const h=state.habits.find(x=>x.id===notesHabitId);if(!h)return;
   if(!h.notes)h.notes={};
-  const editable=document.getElementById('notesEditable');
-  const html=editable.innerHTML.trim();
-  const isBlank=!stripHtml(html)&&!editable.querySelector('img');
-  if(!isBlank)h.notes[notesDate]=html;else delete h.notes[notesDate];
+  const txt=document.getElementById('notesText').value.trim();
+  if(txt)h.notes[notesDate]=txt;else delete h.notes[notesDate];
   save();render();closeNotes();
 }
-
-// ── Notes rich-text toolbar ──
-function updateToolbarState(){
-  document.querySelectorAll('.notes-tb-btn[data-cmd]').forEach(btn=>{
-    const cmd=btn.dataset.cmd;
-    let active=false;
-    try{active=document.queryCommandState(cmd);}catch(e){}
-    btn.classList.toggle('active',active);
-  });
-}
-document.getElementById('notesToolbar').addEventListener('mousedown',e=>{
-  const btn=e.target.closest('.notes-tb-btn[data-cmd]');
-  if(!btn)return;
-  e.preventDefault(); // keep focus/selection inside the editable area
-  document.execCommand(btn.dataset.cmd,false,null);
-  document.getElementById('notesEditable').focus();
-  updateToolbarState();
-});
-document.getElementById('notesEditable').addEventListener('keyup',updateToolbarState);
-document.getElementById('notesEditable').addEventListener('mouseup',updateToolbarState);
-document.getElementById('notesEditable').addEventListener('keydown',e=>{
-  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='b'){e.preventDefault();document.execCommand('bold');updateToolbarState();}
-  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='i'){e.preventDefault();document.execCommand('italic');updateToolbarState();}
-  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='u'){e.preventDefault();document.execCommand('underline');updateToolbarState();}
-});
-
-// Image insertion — reads the file as base64 and inserts it inline
-document.getElementById('notesImageBtn').addEventListener('click',()=>{document.getElementById('notesImageFile').click();});
-document.getElementById('notesImageFile').addEventListener('change',e=>{
-  const file=e.target.files[0];if(!file)return;
-  if(!file.type.startsWith('image/')){alert('Please choose an image file.');e.target.value='';return;}
-  if(file.size>4*1024*1024){alert('That image is a bit large — please choose one under 4MB.');e.target.value='';return;}
-  const reader=new FileReader();
-  reader.onload=()=>{
-    document.getElementById('notesEditable').focus();
-    document.execCommand('insertImage',false,reader.result);
-    updateToolbarState();
-  };
-  reader.readAsDataURL(file);
-  e.target.value='';
-});
-// Support pasting images directly (e.g. from clipboard/screenshot)
-document.getElementById('notesEditable').addEventListener('paste',e=>{
-  const items=(e.clipboardData||{}).items||[];
-  for(const item of items){
-    if(item.type&&item.type.startsWith('image/')){
-      e.preventDefault();
-      const file=item.getAsFile();
-      const reader=new FileReader();
-      reader.onload=()=>{document.execCommand('insertImage',false,reader.result);};
-      reader.readAsDataURL(file);
-      return;
-    }
-  }
-});
 
 function useFreezeFromModal(){
   if(!editing)return;
@@ -1349,6 +1060,7 @@ document.getElementById('modalBg').addEventListener('click',e=>{if(e.target===do
 document.getElementById('deleteBg').addEventListener('click',e=>{if(e.target===document.getElementById('deleteBg'))closeDeleteModal();});
 document.getElementById('notesBg').addEventListener('click',e=>{if(e.target===document.getElementById('notesBg'))closeNotes();});
 document.getElementById('habitName').addEventListener('keydown',e=>{if(e.key==='Enter')saveHabit();});
+document.getElementById('notesText').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.metaKey||e.ctrlKey))saveNote();});
 document.getElementById('emojiSearch').addEventListener('input',e=>{emojiQuery=e.target.value;buildEmojiCats();buildEmojiGrid();});
 
 // Theme
@@ -1357,16 +1069,15 @@ function toggleTheme(){
   document.documentElement.setAttribute('data-theme',next);
   localStorage.setItem('hflow_theme',next);
   const isDark=next==='dark';
-  document.getElementById('themeTopIcon').innerHTML=icon(isDark?'sun':'moon');
-  document.getElementById('themeNavIcon').innerHTML=icon(isDark?'sun':'moon');
+  document.getElementById('themeTopIcon').className='ti ti-'+(isDark?'sun':'moon');
+  document.getElementById('themeNavIcon').className='ti ti-'+(isDark?'sun':'moon');
   document.getElementById('themeNavLabel').textContent=isDark?'Light mode':'Dark mode';
 }
-fillStaticIcons();
 const savedTheme=localStorage.getItem('hflow_theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
 document.documentElement.setAttribute('data-theme',savedTheme);
 const isDarkInit=savedTheme==='dark';
-document.getElementById('themeTopIcon').innerHTML=icon(isDarkInit?'sun':'moon');
-document.getElementById('themeNavIcon').innerHTML=icon(isDarkInit?'sun':'moon');
+document.getElementById('themeTopIcon').className='ti ti-'+(isDarkInit?'sun':'moon');
+document.getElementById('themeNavIcon').className='ti ti-'+(isDarkInit?'sun':'moon');
 document.getElementById('themeNavLabel').textContent=isDarkInit?'Light mode':'Dark mode';
 document.getElementById('themeTopBtn').addEventListener('click',toggleTheme);
 
@@ -1398,6 +1109,8 @@ window.addEventListener('appinstalled',()=>{
   const btn=document.getElementById('installNavBtn');
   if(btn)btn.style.display='none';
 });
+
+render();
 </script>
 </body>
 </html>
