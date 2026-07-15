@@ -26,16 +26,36 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch: cache-first for anything we've seen, falling back to network,
-// and updating the cache in the background when the network succeeds.
+// Fetch: network-first for page navigations (so updates show up immediately
+// on the very next open), cache-first for everything else (icons, manifest,
+// etc — these rarely change, so instant-from-cache is fine for them).
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+
+  const isNavigation = event.request.mode === 'navigate' ||
+    event.request.destination === 'document';
+
+  if (isNavigation) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() =>
+          caches.match(event.request).then(cached => cached || caches.match('./index.html'))
+        )
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then(cached => {
       const networkFetch = fetch(event.request)
         .then(response => {
-          // Only cache successful, same-origin-or-CDN responses.
           if (response && response.status === 200) {
             const clone = response.clone();
             caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
@@ -44,7 +64,6 @@ self.addEventListener('fetch', event => {
         })
         .catch(() => cached); // offline: fall back to whatever we have cached
 
-      // Serve from cache instantly if we have it, otherwise wait on network.
       return cached || networkFetch;
     })
   );
