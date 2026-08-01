@@ -432,11 +432,12 @@ button,input,textarea{font-family:inherit;}
 
     <div class="sidebar-bottom">
       <div class="sidebar-user">
-        <div class="user-avatar">H</div>
+        <div class="user-avatar" id="userAvatar">H</div>
         <div class="user-info">
-          <div class="user-name">HabitFlow</div>
-          <div class="user-plan">Free plan</div>
+          <div class="user-name" id="userName">Guest</div>
+          <div class="user-plan" id="userPlan">Not synced</div>
         </div>
+        <button class="icon-btn" id="authBtn" onclick="handleAuthClick()" title="Sign in to sync" aria-label="Sign in to sync"><i class="ti ti-cloud-off" id="authBtnIcon"></i></button>
       </div>
     </div>
   </aside>
@@ -673,7 +674,16 @@ function todayStr(d=new Date()){return `${d.getFullYear()}-${String(d.getMonth()
 function dateFromStr(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
 function isToday(s){return s===todayStr();}
 function isFuture(s){return s>todayStr();}
-function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function save(){
+  localStorage.setItem(KEY,JSON.stringify(state));
+  if(window.__cloudPush)window.__cloudPush(state);
+}
+window.__cloudGetLocalState=function(){return state;};
+window.__cloudApplyRemote=function(remoteState){
+  state=remoteState;
+  localStorage.setItem(KEY,JSON.stringify(state));
+  render();
+};
 
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sidebarOverlay').classList.add('open');}
 function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('open');}
@@ -1309,6 +1319,128 @@ window.addEventListener('appinstalled',()=>{
 });
 
 render();
+</script>
+
+<!-- Cloud sync (Firebase) — optional; app works fully offline without signing in -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
+  import {
+    getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-auth.js";
+  import {
+    getFirestore, doc, getDoc, setDoc, onSnapshot, enableIndexedDbPersistence
+  } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCMoHsmUofLnFrgeXXf-ZIPx30KbXKq8VU",
+    authDomain: "habitflow-1d964.firebaseapp.com",
+    projectId: "habitflow-1d964",
+    storageBucket: "habitflow-1d964.firebasestorage.app",
+    messagingSenderId: "773491202351",
+    appId: "1:773491202351:web:4beaaed25da980e380a9da"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  enableIndexedDbPersistence(db).catch(()=>{}); // fine if it fails (e.g. multiple tabs open)
+
+  let currentUser = null;
+  let unsub = null;
+  let lastSyncedJSON = null;
+  let pushTimer = null;
+
+  function updateAuthUI(user){
+    const avatar=document.getElementById('userAvatar');
+    const name=document.getElementById('userName');
+    const plan=document.getElementById('userPlan');
+    const btnIcon=document.getElementById('authBtnIcon');
+    const btn=document.getElementById('authBtn');
+    if(user){
+      const label=(user.displayName||user.email||'U');
+      avatar.textContent=label.trim().charAt(0).toUpperCase();
+      name.textContent=user.displayName||user.email;
+      plan.textContent='Synced';
+      btnIcon.className='ti ti-cloud-check';
+      btn.title='Signed in — click to sign out';
+      btn.setAttribute('aria-label','Sign out');
+    }else{
+      avatar.textContent='H';
+      name.textContent='Guest';
+      plan.textContent='Not synced';
+      btnIcon.className='ti ti-cloud-off';
+      btn.title='Sign in to sync';
+      btn.setAttribute('aria-label','Sign in to sync');
+    }
+  }
+
+  async function pushStateToFirestore(state){
+    if(!currentUser)return;
+    const json=JSON.stringify(state);
+    if(json===lastSyncedJSON)return;
+    lastSyncedJSON=json;
+    try{
+      await setDoc(doc(db,'users',currentUser.uid),{state,updatedAt:Date.now()});
+    }catch(e){console.error('Cloud sync failed:',e);}
+  }
+
+  window.__cloudPush=function(state){
+    clearTimeout(pushTimer);
+    pushTimer=setTimeout(()=>pushStateToFirestore(state),500);
+  };
+
+  function attachListener(uid){
+    if(unsub)unsub();
+    unsub=onSnapshot(doc(db,'users',uid),snap=>{
+      if(!snap.exists())return;
+      const remote=snap.data().state;
+      const json=JSON.stringify(remote);
+      if(json===lastSyncedJSON)return; // our own write echoing back
+      lastSyncedJSON=json;
+      window.__cloudApplyRemote(remote);
+    },err=>console.error('Cloud listener error:',err));
+  }
+
+  async function handleAuthChange(user){
+    currentUser=user;
+    updateAuthUI(user);
+    if(user){
+      const ref=doc(db,'users',user.uid);
+      try{
+        const snap=await getDoc(ref);
+        if(snap.exists()){
+          const remote=snap.data().state;
+          lastSyncedJSON=JSON.stringify(remote);
+          window.__cloudApplyRemote(remote);
+        }else{
+          const local=window.__cloudGetLocalState();
+          lastSyncedJSON=JSON.stringify(local);
+          await setDoc(ref,{state:local,updatedAt:Date.now()});
+        }
+        attachListener(user.uid);
+      }catch(e){
+        console.error('Cloud sync init failed:',e);
+        alert('Could not connect to cloud sync: '+e.message);
+      }
+    }else{
+      if(unsub){unsub();unsub=null;}
+      lastSyncedJSON=null;
+    }
+  }
+  onAuthStateChanged(auth,handleAuthChange);
+
+  window.handleAuthClick=async function(){
+    if(currentUser){
+      if(!confirm('Sign out? Your data stays saved in the cloud and on this device.'))return;
+      await signOut(auth);
+    }else{
+      try{
+        await signInWithPopup(auth,new GoogleAuthProvider());
+      }catch(e){
+        alert('Sign-in failed: '+e.message);
+      }
+    }
+  };
 </script>
 </body>
 </html>
