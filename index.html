@@ -14,7 +14,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="HabitFlow"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -24,7 +24,7 @@
   --accent:#2B3A32;--accent-soft:#E4E9E4;--accent-dk:#1C2721;
   --gold:#B08D57;--gold-soft:#F3EADC;--red:#A6453D;--red-soft:#F5E4E1;
   --radius:14px;--radius-sm:9px;--sidebar-w:264px;--header-h:66px;
-  --font-display:'Inter Tight','Neue Haas Grotesk Display','Helvetica Neue',Arial,sans-serif;--font-body:'Inter','Neue Haas Grotesk Text','Helvetica Neue',Arial,sans-serif;
+  --font-display:'Fraunces',serif;--font-body:'Inter',system-ui,sans-serif;
 }
 [data-theme="dark"]{
   --ink:#EFEDE8;--ink-soft:#A39D95;--ink-faint:#6B6560;
@@ -314,6 +314,20 @@ button,input,textarea{font-family:inherit;}
 .del-modal p{font-size:13px;color:var(--ink-soft);line-height:1.6;margin-bottom:22px;}
 .del-btns{display:flex;gap:8px;justify-content:center;}
 
+.stats-modal{width:min(560px,100%);}
+.stats-modal .stats-grid{grid-template-columns:repeat(4,1fr);margin-bottom:2px;}
+.stats-habit-list{display:flex;flex-direction:column;gap:8px;}
+.stats-habit-row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;background:var(--surface-2);}
+.stats-habit-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.stats-habit-info{flex:1;min-width:0;}
+.stats-habit-name{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.stats-habit-meta{display:flex;gap:10px;margin-top:3px;font-size:11px;color:var(--ink-soft);}
+.stats-habit-meta span{display:flex;align-items:center;gap:3px;}
+.stats-bar-track{width:100%;height:5px;background:var(--line);border-radius:3px;margin-top:8px;overflow:hidden;}
+.stats-bar-fill{height:100%;background:var(--accent);border-radius:3px;}
+.stats-habit-pct{font-family:var(--font-display);font-size:16px;font-weight:600;color:var(--ink);flex-shrink:0;width:44px;text-align:right;}
+.stats-empty{font-size:12.5px;color:var(--ink-faint);text-align:center;padding:20px 0;}
+
 .notes-modal{width:min(640px,100%);}
 .rte-toolbar{display:flex;align-items:center;gap:2px;padding:10px 24px;border-bottom:1px solid var(--line);flex-shrink:0;flex-wrap:wrap;}
 .rte-btn{background:none;border:1px solid transparent;color:var(--ink-soft);width:32px;height:32px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.12s;}
@@ -384,8 +398,11 @@ button,input,textarea{font-family:inherit;}
         <i class="ti ti-check"></i> Today
         <span class="nav-badge" id="sidebarTodayBadge">0</span>
       </button>
-      <button class="nav-item" onclick="toggleHeatmap();closeSidebar()">
-        <i class="ti ti-layout-grid"></i> Heatmap
+      <button class="nav-item" onclick="scrollToCalendar();closeSidebar()">
+        <i class="ti ti-layout-grid"></i> Calendar
+      </button>
+      <button class="nav-item" onclick="openStats();closeSidebar()">
+        <i class="ti ti-chart-bar"></i> Stats
       </button>
       <button class="nav-item" id="archivedNavBtn" onclick="toggleArchived();closeSidebar()">
         <i class="ti ti-archive"></i> Archived
@@ -433,7 +450,8 @@ button,input,textarea{font-family:inherit;}
       </button>
       <div class="topbar-title">Today</div>
       <div class="topbar-date" id="topbarDate"></div>
-      <button class="icon-btn" id="heatmapBtn" onclick="toggleHeatmap()" title="Heatmap" aria-label="Heatmap"><i class="ti ti-layout-grid"></i></button>
+      <button class="icon-btn" id="heatmapBtn" onclick="scrollToCalendar()" title="Calendar" aria-label="Calendar"><i class="ti ti-layout-grid"></i></button>
+      <button class="icon-btn" onclick="openStats()" title="Stats" aria-label="Stats"><i class="ti ti-chart-bar"></i></button>
       <button class="icon-btn" onclick="openModal()" title="Add habit" aria-label="Add habit"><i class="ti ti-plus"></i></button>
       <button class="icon-btn" id="themeTopBtn" title="Toggle theme" aria-label="Toggle theme"><i class="ti ti-moon" id="themeTopIcon"></i></button>
     </header>
@@ -460,6 +478,21 @@ button,input,textarea{font-family:inherit;}
       <!-- Stats -->
       <div class="stats-grid" id="statsRow"></div>
 
+      <!-- Calendar (click any past day to jump to it) -->
+      <div class="heatmap-card" id="heatmapSection">
+        <div class="heatmap-title">
+          <span>Calendar — last 3 months</span>
+          <div class="heatmap-legend">
+            <span class="hm-swatch" style="background:var(--surface-2)"></span>0
+            <span class="hm-swatch hm-cell l2" style="margin-left:4px"></span>
+            <span class="hm-swatch hm-cell l4"></span>100%
+            <span class="hm-swatch hm-cell perfect" style="margin-left:4px"></span>Perfect
+          </div>
+        </div>
+        <div class="heatmap-months" id="heatmapMonths"></div>
+        <div style="overflow-x:auto;"><div class="heatmap-grid" id="heatmapGrid"></div></div>
+      </div>
+
       <!-- Filter + list -->
       <div class="filter-bar">
         <div class="filter-left">
@@ -477,21 +510,6 @@ button,input,textarea{font-family:inherit;}
         </div>
       </div>
       <div class="habit-list" id="habitList"></div>
-
-      <!-- Heatmap -->
-      <div class="heatmap-card" id="heatmapSection" style="display:none">
-        <div class="heatmap-title">
-          <span>Last 3 months</span>
-          <div class="heatmap-legend">
-            <span class="hm-swatch" style="background:var(--surface-2)"></span>0
-            <span class="hm-swatch hm-cell l2" style="margin-left:4px"></span>
-            <span class="hm-swatch hm-cell l4"></span>100%
-            <span class="hm-swatch hm-cell perfect" style="margin-left:4px"></span>Perfect
-          </div>
-        </div>
-        <div class="heatmap-months" id="heatmapMonths"></div>
-        <div style="overflow-x:auto;"><div class="heatmap-grid" id="heatmapGrid"></div></div>
-      </div>
 
       <!-- Archived -->
       <div class="archived-card" id="archivedSection" style="display:none">
@@ -587,6 +605,21 @@ button,input,textarea{font-family:inherit;}
   </div>
 </div>
 
+<!-- Stats modal -->
+<div class="modal-bg" id="statsBg">
+  <div class="modal stats-modal">
+    <div class="modal-header">
+      <h3>Stats</h3>
+      <button class="icon-btn" onclick="closeStats()" aria-label="Close"><i class="ti ti-x" style="font-size:18px"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="seg-row" id="statsPeriodRow"></div>
+      <div class="stats-grid" id="statsOverviewGrid"></div>
+      <div id="statsHabitList" class="stats-habit-list"></div>
+    </div>
+  </div>
+</div>
+
 <div class="hm-tooltip" id="hmTooltip"></div>
 <input type="file" id="importFile" accept="application/json" style="display:none" onchange="handleImportFile(event)"/>
 
@@ -632,7 +665,9 @@ let selTime='any',selFreqType='daily',selFreqDays=[1,2,3,4,5];
 let weekOffset=0,selectedDateStr=todayStr();
 let timeFilter='all';
 let notesHabitId=null,notesDate=null;
-let dragSrc=null,heatmapVisible=false,archivedVisible=false;
+let dragSrc=null,archivedVisible=false;
+let statsPeriod=30;
+const STATS_PERIODS=[[7,'7d'],[30,'30d'],[90,'90d']];
 
 function todayStr(d=new Date()){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 function dateFromStr(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
@@ -663,6 +698,17 @@ function currentStreak(h){
   return s;
 }
 function totalDone(log){return Object.values(log||{}).filter(Boolean).length;}
+function completionForPeriod(h,days){
+  let scheduled=0,done=0;
+  for(let i=0;i<days;i++){
+    const d=new Date();d.setDate(d.getDate()-i);
+    if(!isScheduledOn(h,d))continue;
+    scheduled++;
+    const k=todayStr(d);
+    if((h.log&&h.log[k])||(h.freezes&&h.freezes[k]))done++;
+  }
+  return scheduled?done/scheduled:null;
+}
 function canFreeze(h){
   const freezes=h.freezes||{};
   for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()-i);if(freezes[todayStr(d)])return false;}
@@ -890,14 +936,10 @@ function renderDateLabel(){
   document.getElementById('todayLabel').textContent=isToday(selectedDateStr)?'Today':d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
 }
 
-function toggleHeatmap(){
-  heatmapVisible=!heatmapVisible;
-  document.getElementById('heatmapSection').style.display=heatmapVisible?'block':'none';
-  document.getElementById('heatmapBtn').style.color=heatmapVisible?'var(--accent)':'';
-  if(heatmapVisible)renderHeatmap();
+function scrollToCalendar(){
+  document.getElementById('heatmapSection').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function renderHeatmap(){
-  if(!heatmapVisible)return;
   const grid=document.getElementById('heatmapGrid');
   const monthsEl=document.getElementById('heatmapMonths');
   grid.innerHTML='';monthsEl.innerHTML='';
@@ -930,7 +972,13 @@ function renderHeatmap(){
       cell.addEventListener('mouseenter',e=>{tip.textContent=`${d.toLocaleDateString(undefined,{month:'short',day:'numeric'})}: ${done}/${t} habits`;tip.style.display='block';tip.style.left=(e.clientX+10)+'px';tip.style.top=(e.clientY-28)+'px';});
       cell.addEventListener('mousemove',e=>{tip.style.left=(e.clientX+10)+'px';tip.style.top=(e.clientY-28)+'px';});
       cell.addEventListener('mouseleave',()=>{tip.style.display='none';});
-      cell.addEventListener('click',()=>{selectedDateStr=key;weekOffset=0;const diff=Math.round((today-d)/(7*86400000));weekOffset=-Math.min(Math.floor(diff/7)*7,84);render();});
+      cell.addEventListener('click',()=>{
+        selectedDateStr=key;weekOffset=0;
+        const diff=Math.round((today-d)/(7*86400000));
+        weekOffset=-Math.min(Math.floor(diff/7)*7,84);
+        render();
+        document.getElementById('habitList').scrollIntoView({behavior:'smooth',block:'start'});
+      });
       col.appendChild(cell);
     });
     grid.appendChild(col);
@@ -971,6 +1019,69 @@ function restoreHabit(id){
 function permanentlyDelete(id){
   if(!confirm('Permanently delete this habit and all its history? This cannot be undone.'))return;
   state.habits=state.habits.filter(x=>x.id!==id);save();render();
+}
+
+function openStats(){
+  document.getElementById('statsBg').classList.add('open');
+  renderStatsModal();
+}
+function closeStats(){document.getElementById('statsBg').classList.remove('open');}
+function buildStatsPeriodRow(){
+  const r=document.getElementById('statsPeriodRow');r.innerHTML='';
+  STATS_PERIODS.forEach(([days,lbl])=>{
+    const b=document.createElement('button');b.className='seg-btn'+(days===statsPeriod?' active':'');
+    b.textContent=lbl;b.onclick=()=>{statsPeriod=days;renderStatsModal();};r.appendChild(b);
+  });
+}
+function renderStatsModal(){
+  buildStatsPeriodRow();
+  const active=state.habits.filter(h=>!h.deletedAt);
+  const overviewGrid=document.getElementById('statsOverviewGrid');
+  const listEl=document.getElementById('statsHabitList');
+
+  let totalScheduled=0,totalDoneInPeriod=0,checkIns=0;
+  active.forEach(h=>{
+    for(let i=0;i<statsPeriod;i++){
+      const d=new Date();d.setDate(d.getDate()-i);
+      if(!isScheduledOn(h,d))continue;
+      totalScheduled++;
+      const k=todayStr(d);
+      if((h.log&&h.log[k])||(h.freezes&&h.freezes[k]))totalDoneInPeriod++;
+    }
+    checkIns+=totalDone(h.log);
+  });
+  const overallPct=totalScheduled?Math.round(totalDoneInPeriod/totalScheduled*100):0;
+  const best=active.length?Math.max(0,...active.map(h=>currentStreak(h))):0;
+  const pd=perfectDays();
+
+  overviewGrid.innerHTML=`
+    <div class="stat-card"><div class="stat-icon"><i class="ti ti-percentage"></i></div><div class="stat-num">${overallPct}%</div><div class="stat-lbl">Completion (${statsPeriod}d)</div></div>
+    <div class="stat-card"><div class="stat-icon"><i class="ti ti-check"></i></div><div class="stat-num">${checkIns}</div><div class="stat-lbl">Total check-ins</div></div>
+    <div class="stat-card"><div class="stat-icon"><i class="ti ti-bolt"></i></div><div class="stat-num">${best}d</div><div class="stat-lbl">Best streak</div></div>
+    <div class="stat-card gold"><div class="stat-icon"><i class="ti ti-star"></i></div><div class="stat-num">${pd}</div><div class="stat-lbl">Perfect days</div></div>`;
+
+  if(!active.length){
+    listEl.innerHTML='<div class="stats-empty">No habits yet — add one to see stats.</div>';
+    return;
+  }
+  listEl.innerHTML='';
+  active.forEach(h=>{
+    const pct=completionForPeriod(h,statsPeriod);
+    const pctNum=pct===null?0:Math.round(pct*100);
+    const row=document.createElement('div');row.className='stats-habit-row';
+    row.innerHTML=`
+      <div class="stats-habit-icon" style="background:${h.color}22">${h.emoji}</div>
+      <div class="stats-habit-info">
+        <div class="stats-habit-name">${h.name}</div>
+        <div class="stats-habit-meta">
+          <span><i class="ti ti-bolt" style="font-size:10px"></i> ${currentStreak(h)}d streak</span>
+          <span><i class="ti ti-check" style="font-size:10px"></i> ${totalDone(h.log)} check-ins</span>
+        </div>
+        <div class="stats-bar-track"><div class="stats-bar-fill" style="width:${pctNum}%"></div></div>
+      </div>
+      <div class="stats-habit-pct">${pct===null?'—':pctNum+'%'}</div>`;
+    listEl.appendChild(row);
+  });
 }
 
 function exportData(){
@@ -1145,6 +1256,7 @@ function doDelete(){if(!editing)return;editing.deletedAt=todayStr();save();rende
 document.getElementById('modalBg').addEventListener('click',e=>{if(e.target===document.getElementById('modalBg'))closeModal();});
 document.getElementById('deleteBg').addEventListener('click',e=>{if(e.target===document.getElementById('deleteBg'))closeDeleteModal();});
 document.getElementById('notesBg').addEventListener('click',e=>{if(e.target===document.getElementById('notesBg'))closeNotes();});
+document.getElementById('statsBg').addEventListener('click',e=>{if(e.target===document.getElementById('statsBg'))closeStats();});
 document.getElementById('habitName').addEventListener('keydown',e=>{if(e.key==='Enter')saveHabit();});
 document.getElementById('notesText').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.metaKey||e.ctrlKey))saveNote();});
 document.getElementById('emojiSearch').addEventListener('input',e=>{emojiQuery=e.target.value;buildEmojiCats();buildEmojiGrid();});
